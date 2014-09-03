@@ -1,11 +1,10 @@
 package com.runner.timer;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +21,7 @@ public class MainActivity extends Activity {
 	public TextView seconds;
 	private int secNumber = 0;
 	private int minNumber = 0;
-	private boolean pauseTheClock = false;
+	private boolean pauseTheClock = false; //use to determine the button's state
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +33,8 @@ public class MainActivity extends Activity {
 		
 		minutes = (TextView) findViewById(R.id.min);
 		seconds = (TextView) findViewById(R.id.sec);
+		
+		LocationManager mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		startButton.setOnClickListener(new View.OnClickListener(){
 
@@ -78,6 +79,14 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
+	@Override
+	protected void onPause(){
+		timerHandler.removeCallbacks(timerRunnable);
+		pauseTheClock = false;
+		startButton = (Button) findViewById(R.id.startButton);
+		startButton.setText(getResources().getString(R.string.start_button));
+	}
+	
 	Handler timerHandler = new Handler();
     Runnable timerRunnable = new Runnable() {
 
@@ -97,7 +106,6 @@ public class MainActivity extends Activity {
 				seconds.setText("0");
 			seconds.append(Integer.toString(secNumber));
             timerHandler.postDelayed(this, 1000);
-            //timerHandler.wait();
         }
     };
 }
