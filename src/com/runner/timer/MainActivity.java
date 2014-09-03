@@ -3,8 +3,10 @@ package com.runner.timer;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,11 +14,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	private Button startButton;
 	private Button stopButton;
+	private Button mileButton;
 	public TextView minutes;
 	public TextView seconds;
 	private int secNumber = 0;
@@ -28,13 +32,13 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		final Context thisActivity = this;
+		
 		startButton = (Button) findViewById(R.id.startButton);
 		stopButton = (Button) findViewById(R.id.stopButton);
 		
 		minutes = (TextView) findViewById(R.id.min);
 		seconds = (TextView) findViewById(R.id.sec);
-		
-		LocationManager mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		startButton.setOnClickListener(new View.OnClickListener(){
 
@@ -70,8 +74,34 @@ public class MainActivity extends Activity {
 			}
 			
 		});
+		
+		//*******************Location**********************
+		
+		final LocationManager mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		/*
+		mileButton = (Button) findViewById(R.id.mile_button);
+		
+		mileButton.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)||
+						mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+					
+				}
+				else{
+					Toast.makeText(thisActivity, getResources().getString(R.string.enable_GPS), Toast.LENGTH_SHORT).show();;
+					startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+				}
+			}
+			
+		});
+		
+		*/
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -81,11 +111,12 @@ public class MainActivity extends Activity {
 	
 	@Override
 	protected void onPause(){
+		super.onPause();
 		timerHandler.removeCallbacks(timerRunnable);
 		pauseTheClock = false;
 		startButton = (Button) findViewById(R.id.startButton);
 		startButton.setText(getResources().getString(R.string.start_button));
-	}
+	}	
 	
 	Handler timerHandler = new Handler();
     Runnable timerRunnable = new Runnable() {
