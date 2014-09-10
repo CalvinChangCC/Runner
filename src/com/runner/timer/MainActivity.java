@@ -1,5 +1,8 @@
 package com.runner.timer;
 
+import com.runner.function.GPSfunction;
+
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +29,13 @@ public class MainActivity extends Activity {
 	private int secNumber = 0;
 	private int minNumber = 0;
 	private boolean pauseTheClock = false; //use to determine the button's state
+	
+	private boolean locationService = false; //use to determine the location service is on or not
+	private GPSfunction mGPS;
+	private double longutide;
+	private double latitude;
+	public TextView lo;// display longutide
+	public TextView la;// display latitude
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,8 @@ public class MainActivity extends Activity {
 				secNumber = 0 ;
 				minutes.setText("00");
 				seconds.setText("00");
+				pauseTheClock = false;
+				startButton.setText(getResources().getString(R.string.start_button));
 				
 			}
 			
@@ -77,8 +89,11 @@ public class MainActivity extends Activity {
 		
 		//*******************Location**********************
 		
+		lo = (TextView) findViewById(R.id.loText);
+		la = (TextView) findViewById(R.id.laText);
+		
 		final LocationManager mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		/*
+		
 		mileButton = (Button) findViewById(R.id.mile_button);
 		
 		mileButton.setOnClickListener(new OnClickListener(){
@@ -88,7 +103,21 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)||
 						mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-					
+					Button b = (Button)v;
+					if(!locationService){
+						locationService = true;
+						b.setText(getResources().getString(R.string.off_button));
+						mGPS = new GPSfunction(mLocationManager);
+						Location locationNow = mGPS.locationserviceInitial();
+						longutide = locationNow.getLongitude();
+						latitude = locationNow.getLatitude();
+						lo.setText(String.valueOf(longutide));
+						la.setText(String.valueOf(latitude));
+					}
+					else{
+						locationService = false;						
+						b.setText(getResources().getString(R.string.mile_button));
+					}
 				}
 				else{
 					Toast.makeText(thisActivity, getResources().getString(R.string.enable_GPS), Toast.LENGTH_SHORT).show();;
@@ -98,7 +127,7 @@ public class MainActivity extends Activity {
 			
 		});
 		
-		*/
+		
 	}
 
 	

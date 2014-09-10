@@ -8,5 +8,6 @@
     <string name="stop_button">Reset</string>
     <string name="enable_GPS">Please enable GPS</string>
     <string name="mile_button">Mile</string>
+    <string name="off_button">off</string>
 
 </resources>
