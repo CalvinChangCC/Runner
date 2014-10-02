@@ -3,6 +3,7 @@ package com.runner.timer;
 import com.runner.function.GPSfunction;
 
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
 	private int minNumber = 0;
 	private boolean pauseTheClock = false; //use to determine the button's state
 	
+	private LocationManager mLocationManager;
 	private boolean locationService = false; //use to determine the location service is on or not
 	private GPSfunction mGPS;
 	private double longutide;
@@ -92,7 +94,7 @@ public class MainActivity extends Activity {
 		lo = (TextView) findViewById(R.id.loText);
 		la = (TextView) findViewById(R.id.laText);
 		
-		final LocationManager mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		mileButton = (Button) findViewById(R.id.mile_button);
 		
@@ -107,12 +109,20 @@ public class MainActivity extends Activity {
 					if(!locationService){
 						locationService = true;
 						b.setText(getResources().getString(R.string.off_button));
-						mGPS = new GPSfunction(mLocationManager);
+						Log.d("qq","1");
+						mGPS = new GPSfunction(mLocationManager, thisActivity);
 						Location locationNow = mGPS.locationserviceInitial();
-						longutide = locationNow.getLongitude();
-						latitude = locationNow.getLatitude();
-						lo.setText(String.valueOf(longutide));
-						la.setText(String.valueOf(latitude));
+						if(locationNow!=null){
+							Log.d("qq","2");
+							longutide = locationNow.getLongitude();
+							latitude = locationNow.getLatitude();
+							Log.d("qq","3");
+							lo.setText(String.valueOf(longutide));
+							la.setText(String.valueOf(latitude));
+						}
+						else{
+							Toast.makeText(thisActivity, "Can't get location", Toast.LENGTH_SHORT).show();;
+						}
 					}
 					else{
 						locationService = false;						
@@ -145,6 +155,11 @@ public class MainActivity extends Activity {
 		pauseTheClock = false;
 		startButton = (Button) findViewById(R.id.startButton);
 		startButton.setText(getResources().getString(R.string.start_button));
+		
+		//for location service, when left app stop update
+		if(locationService) {
+			mLocationManager.removeUpdates(mGPS);	//離開頁面時停止更新
+		}
 	}	
 	
 	Handler timerHandler = new Handler();

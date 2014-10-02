@@ -1,16 +1,20 @@
 package com.runner.function;
 
+import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class GPSfunction implements LocationListener {
 
+	private Context mContext;
 	private LocationManager lms;
-	public GPSfunction(LocationManager mLocation){
+	public GPSfunction(LocationManager mLocation, Context gpsContext){
 		lms = mLocation;
+		mContext = gpsContext;
 	}
 	
 	public Location locationserviceInitial()
@@ -18,7 +22,7 @@ public class GPSfunction implements LocationListener {
 		String best_provider = LocationManager.GPS_PROVIDER;
 		Criteria criteria = new Criteria();
 		best_provider = lms.getBestProvider(criteria, true);
-		return lms.getLastKnownLocation(best_provider);
+		return lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	}
 	
 	@Override
@@ -30,7 +34,7 @@ public class GPSfunction implements LocationListener {
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(mContext, "Provider disable", Toast.LENGTH_SHORT);
 	}
 
 	@Override
